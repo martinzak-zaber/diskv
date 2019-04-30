@@ -208,7 +208,7 @@ func (d *Diskv) createKeyFileWithLock(pathKey *PathKey) (*os.File, error) {
 			return nil, fmt.Errorf("temp file: %s", err)
 		}
 
-		if err := f.Chmod(d.FilePerm); err != nil {
+		if err := os.Chmod(f.Name(), d.FilePerm); err != nil {
 			f.Close()           // error deliberately ignored
 			os.Remove(f.Name()) // error deliberately ignored
 			return nil, fmt.Errorf("chmod: %s", err)
@@ -313,8 +313,8 @@ func (d *Diskv) Import(srcFilename, dstKey string, move bool) (err error) {
 		if err := syscall.Rename(srcFilename, d.completeFilename(dstPathKey)); err == nil {
 			d.bustCacheWithLock(dstPathKey.originalKey)
 			return nil
-		} else if err != syscall.EXDEV {
-			// If it failed due to being on a different device, fall back to copying
+		} else if err != syscall.EXDEV && err != syscall.ERROR_ALREADY_EXISTS {
+			// If it failed due to being on a different device or file already exists, fall back to copying
 			return err
 		}
 	}
@@ -323,8 +323,8 @@ func (d *Diskv) Import(srcFilename, dstKey string, move bool) (err error) {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 	err = d.writeStreamWithLock(dstPathKey, f, false)
+	f.Close()
 	if err == nil && move {
 		err = os.Remove(srcFilename)
 	}

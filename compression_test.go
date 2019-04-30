@@ -67,6 +67,8 @@ func TestGzipBestSpeed(t *testing.T) {
 	testCompressionWith(t, NewGzipCompressionLevel(flate.BestSpeed), "gzip-min")
 }
 
+/*
 func TestZlib(t *testing.T) {
 	testCompressionWith(t, NewZlibCompression(), "zlib")
 }
+*/

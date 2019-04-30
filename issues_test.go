@@ -111,7 +111,9 @@ func TestIssue17(t *testing.T) {
 		wg.Add(1)
 		go func(k, v string) {
 			<-start
-			dRead.ReadStream(k, true)
+			rs, _ := dRead.ReadStream(k, true)
+			ioutil.ReadAll(rs)
+
 			wg.Done()
 		}(k, v)
 	}

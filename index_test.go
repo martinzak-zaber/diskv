@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
+	"path/filepath"
 )
 
 func strLess(a, b string) bool { return a < b }
@@ -152,7 +153,7 @@ func TestBadKeys(t *testing.T) {
 	})
 	defer d.EraseAll()
 
-	for _, k := range []string{"a/a"} {
+	for _, k := range []string{filepath.Join("a", "a")} {
 		err := d.Write(k, []byte("1"))
 		if err != errBadKey {
 			t.Errorf("Expected bad key error, got: %v", err)
